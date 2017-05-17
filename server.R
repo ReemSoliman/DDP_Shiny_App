@@ -10,30 +10,30 @@
 library(shiny)
 library(ggplot2)
 library(forecast)
-# Define server logic required to draw a histogram
+# Define server logic required to draw a plot
 shinyServer(function(input, output) {
   
-  
+    #load the data
     mi <- read.csv("Maryland_Infants1.csv")
  
     output$plot <- renderPlot({
       if(input$Case == "mor")
       {
         if(input$race == "wt"){
-          # plot(data$Year, data$InfantMortalityRateWhite, col="orange") 
+          
           yvar <- mi$InfantMortalityRateWhite
           yLabel <- "White Infant Mortality Rate "
-         # z<- ts(mi$InfantMortalityRateWhite,start = c(1919) , end=c(2015), frequency = 1)
+         
         }
         else if(input$race == "blk"){
           yvar <- mi$InfantMortalityRateBlack
           yLabel <- "Black Infant Mortality Rate "
-          #z<- ts(mi$InfantMortalityRateBlack,start = c(1919) , end=c(2015), frequency = 1)
+          
         }
         else if(input$race == "both"){
           yvar<- mi$InfantMortalityRateTotal
           yLabel <- "Black and White Infant Mortality Rate "
-          #z<- ts(mi$InfantMortalityRateTotal,start = c(1919) , end=c(2015), frequency = 1)
+          
         }
         
         
@@ -43,22 +43,22 @@ shinyServer(function(input, output) {
         if(input$race == "wt"){
           yvar<- mi$NumberOfInfantDeathsWhite
           yLabel <- "White Infant Deaths Number "
-          #z<- ts(mi$NumberOfInfantDeathsWhite,start = c(1919) , end=c(2015), frequency = 1)
+         
         }
         else if(input$race == "blk"){
           yvar<-  mi$NumberOfInfantDeathsBlack
           yLabel <- "Black Infant Deaths Number "
-          #z<- ts(mi$NumberOfInfantDeathsBlack,start = c(1919) , end=c(2015), frequency = 1)
+          
         }
         else if(input$race == "both"){
           yvar<- mi$NumberOfInfantDeathsTotal
           yLabel <- "Black and White Infant Deaths Number "
-          #z<- ts(mi$NumberOfInfantDeathsTotal,start = c(1919) , end=c(2015), frequency = 1)
+         
         }
-        #lines()
+        
         
       }
-      
+      #draw the plot
       p<- ggplot(mi,  aes(Year, yvar))+ 
         geom_point(aes(color = yvar)) +
         geom_smooth(method ="lm") +
@@ -105,15 +105,16 @@ shinyServer(function(input, output) {
      fit <- HoltWinters(z, beta=FALSE, gamma=FALSE)
      f<- forecast(fit, 5)
      
-     #y<- data.frame(date=as.POSIXct(time(for_means)), Prediction Mean=as.matrix(for_means) )
      })
     
      output$prediction<- renderTable({ 
        f <- predicted()
        for_means<-   f$mean
+       #diaplay the forcast table
        y<- data.frame(Year=time(for_means), Prediction =as.matrix(for_means) )
     
   })
+     #draw the forecast plot
      output$prdplot<- renderPlot({ plot(predicted() ) })
   
 })
